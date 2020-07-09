@@ -21,7 +21,7 @@ class CModelViewer;
 
 #include <Common.h>
 
-#include <qdom.h>
+#include <QtXml/qdom.h>
 #include <QtMultimedia\QSoundEffect.h>
 
 #include <assimp/Importer.hpp>

@@ -7,6 +7,9 @@
 #ifndef EXPORTER_H
 #define EXPORTER_H
 
+#include <QtCore/QMap>
+#include <QtCore/QList>
+
 class CAnimatedMesh;
 struct GMObject;
 struct Material;
@@ -22,13 +25,14 @@ public:
 	virtual bool Export(const string& filename) = 0;
 
 protected:
+	CAnimatedMesh* m_mesh;
 	int m_frameCount;
 	string m_rootBoneID;
 	QMap<string, Material*> m_materials;
 	QMap<Material*, MaterialBlock*> m_materialBlocks;
 	QList<Bone*> m_bones;
 	QMap<string, GMObject*> m_objects;
-	QMap<string, TMAnimation*> m_animations;
+	QVector<QMap<string, TMAnimation*>> m_animations;
 	QMap<Bone*, int> m_boneIDs;
 	QMap<GMObject*, int> m_objectIDs;
 	QMap<GMObject*, int> m_objectLODs;

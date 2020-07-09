@@ -7,6 +7,8 @@
 #ifndef D3DWIDGET_H
 #define D3DWIDGET_H
 
+#include <QtCore/QTimer>
+#include <QtCore/QElapsedTimer>
 #include "D3DEnum.h"
 #include "D3DSettings.h"
 

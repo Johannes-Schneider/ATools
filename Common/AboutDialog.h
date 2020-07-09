@@ -7,6 +7,8 @@
 #ifndef ABOUTDIALOG_H
 #define ABOUTDIALOG_H
 
+#include <QtWidgets/QMainWindow>
+
 class CD3DWidget;
 
 class CAboutDialog : public QDialog

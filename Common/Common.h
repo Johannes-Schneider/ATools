@@ -13,11 +13,13 @@
 // pour les defines en .h
 // détermine la version du GUIEditor aussi
 #define __VER	15
+#define ENABLE_LOD false
 
 #define QT_MESSAGELOGCONTEXT
 
-#include <QtWidgets>
-#include <qmath.h>
+#include <QtWidgets/QDialog>
+#include <QtCore/QString>
+#include <QtCore/QtMath>
 #include <d3dx9.h>
 
 #ifdef GetObject
@@ -72,6 +74,8 @@ void InstallMsgHandler();
 string GetExtension(const string& filename);
 
 float RoundFloat(float value, float round);
+
+float RoundIfAlmost(float actualValue, float referenceValue, float threshold = 0.000001f);
 
 #include "PtrArray.h"
 #include "File.h"

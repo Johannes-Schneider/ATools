@@ -7,6 +7,8 @@
 #include <stdafx.h>
 #include "TextureMng.h"
 
+#include <QtCore/QFileInfo>
+
 CTextureMng* TextureMng = null;
 
 CTextureMng::CTextureMng(LPDIRECT3DDEVICE9 device)

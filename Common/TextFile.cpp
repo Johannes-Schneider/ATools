@@ -5,7 +5,11 @@
 ///////////
 
 #include <stdafx.h>
+#include <QtCore/QMap>
 #include "TextFile.h"
+
+#include <QtCore/QString>
+#include <QtWidgets/QComboBox>
 
 QMap<string, int> CTextFile::s_defines;
 QMap<string, string> CTextFile::s_texts;

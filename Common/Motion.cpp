@@ -241,6 +241,21 @@ int CMotion::GetFrameCount()
 	return m_frameCount;
 }
 
+BoneFrame* CMotion::GetFrames()
+{
+	return m_frames;
+}
+
+int CMotion::GetBoneCount()
+{
+	return m_boneCount;
+}
+
+Bone* CMotion::GetBones()
+{
+	return m_bones;
+}
+
 CSkeleton::CSkeleton()
 	: m_boneCount(0),
 	m_bones(null),

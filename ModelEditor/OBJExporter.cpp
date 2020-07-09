@@ -7,6 +7,8 @@
 #include "stdafx.h"
 #include "OBJExporter.h"
 #include <Object3D.h>
+#include <QtCore/QTextStream>
+#include <QtCore/QFileInfo>
 #include <Motion.h>
 
 COBJExporter::COBJExporter(CAnimatedMesh* mesh)

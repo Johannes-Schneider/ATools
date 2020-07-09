@@ -58,6 +58,9 @@ public:
 
 	MotionAttribute* GetAttributes() const;
 	int GetFrameCount();
+	BoneFrame* GetFrames();
+	int GetBoneCount();
+	Bone* GetBones();
 
 	void Animate(D3DXMATRIX* bones, float currentFrame, int nextFrame);
 

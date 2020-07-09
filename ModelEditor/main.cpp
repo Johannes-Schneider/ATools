@@ -5,6 +5,9 @@
 ///////////
 
 #include "stdafx.h"
+
+#include <QtCore/QDir>
+
 #include "MainFrame.h"
 
 int main(int argc, char *argv[])

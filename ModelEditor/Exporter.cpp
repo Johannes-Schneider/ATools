@@ -10,8 +10,12 @@
 #include <Object3D.h>
 #include <Motion.h>
 
+#include "ModelMng.h"
+
 CExporter::CExporter(CAnimatedMesh* mesh)
 {
+	m_mesh = mesh;
+	
 	CObject3D* obj3D = null;
 	for (int i = 0; i < MAX_ANIMATED_ELEMENTS; i++)
 	{
@@ -198,27 +202,44 @@ CExporter::CExporter(CAnimatedMesh* mesh)
 	m_frameCount = 0;
 	if (obj3D->m_frameCount > 0)
 		m_frameCount = obj3D->m_frameCount;
-	else if (motion && motion->m_frameCount > 0)
-		m_frameCount = motion->m_frameCount;
 
 	if (obj3D->m_frameCount > 0)
 	{
-		for (auto it = m_objects.begin(); it != m_objects.end(); it++)
+		m_animations.append(QMap<string, TMAnimation*>());
+		for (auto it = m_objects.begin(); it != m_objects.end(); ++it)
 		{
 			if (it.value()->frames)
-				m_animations[it.key() % "-transform"] = it.value()->frames;
+			{
+				m_animations.back()[it.key() % "-transform"] = it.value()->frames;
+			}
 		}
 	}
 
-	if (motion)
+	if (!mesh->m_motionFiles.empty())
 	{
-		for (int i = 0; i < boneCount; i++)
+		for (auto it = mesh->m_motionFiles.begin(); it != mesh->m_motionFiles.end(); ++it)
 		{
-			const string boneID = string(bones[i].name).toLower().replace('.', '_').replace('-', '_').replace(' ', '_');
-			if (motion->m_frames[i].frames)
-				m_animations[boneID % "-transform"] = motion->m_frames[i].frames;
-			else
-				m_boneAnimTMs[m_bones[i]] = motion->m_frames[i].TM;
+			motion = ModelMng->GetMotion(*it);
+			if (!motion)
+			{
+				continue;
+			}
+
+			boneCount = motion->m_boneCount;
+			bones = motion->m_bones;
+			m_animations.append(QMap<string, TMAnimation*>());
+			for (int i = 0; i < boneCount; i++)
+			{
+				const string boneID = string(bones[i].name).toLower().replace('.', '_').replace('-', '_').replace(' ', '_');
+				if (motion->m_frames[i].frames)
+				{
+					m_animations.back()[boneID % "-transform"] = motion->m_frames[i].frames;
+				}
+				else
+				{
+					m_boneAnimTMs[m_bones[i]] = motion->m_frames[i].TM;
+				}
+			}
 		}
 	}
 }

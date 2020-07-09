@@ -246,6 +246,12 @@ void CAnimatedMesh::SetMotion(const string& filename)
 	}
 }
 
+void CAnimatedMesh::AddMotionFile(const string & filename)
+{
+	m_motionFiles.append(filename);
+	ModelMng->GetMotion(filename); // cache motion
+}
+
 MotionAttribute* CAnimatedMesh::GetAttributes() const
 {
 	if (m_motion)
@@ -254,6 +260,11 @@ MotionAttribute* CAnimatedMesh::GetAttributes() const
 		return m_elements[0].obj->GetAttributes();
 	else
 		return null;
+}
+
+const QVector<string>& CAnimatedMesh::GetMotionFiles() const
+{
+	return m_motionFiles;
 }
 
 void CAnimatedMesh::RenderCollision(const D3DXMATRIX* world)

@@ -7,6 +7,10 @@
 #include <stdafx.h>
 #include "Common.h"
 #include <time.h>
+#include <QtCore/QDir>
+#include <QtCore/QDateTime>
+#include <QtCore/QTextStream>
+#include <QtWidgets/QMessageBox>
 
 #ifdef WORLD_EDITOR
 #include <MainFrame.h>
@@ -19,6 +23,17 @@ float RoundFloat(float value, float round)
 		return value - mod + round;
 	else
 		return value - mod;
+}
+
+float RoundIfAlmost(float actualValue, float referenceValue, float threshold)
+{
+	const float diff = actualValue - referenceValue;
+	if (abs(diff) <= threshold)
+	{
+		return referenceValue;
+	}
+
+	return actualValue;
 }
 
 string GetExtension(const string& filename)

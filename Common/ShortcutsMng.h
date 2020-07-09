@@ -7,6 +7,9 @@
 #ifndef SHORTCUTSMNG_H
 #define SHORTCUTSMNG_H
 
+#include <QtWidgets/QAction>
+#include <QtCore/QMap>
+
 class CShortcutsMng
 {
 public:

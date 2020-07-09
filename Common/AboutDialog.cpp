@@ -6,6 +6,12 @@
 
 #include <stdafx.h>
 #include "AboutDialog.h"
+
+
+#include <QtWidgets/QLabel>
+#include <QtWidgets/QTextEdit>
+#include <QtWidgets/QMainWindow>
+
 #include "D3DWidget.h"
 
 CAboutDialog::CAboutDialog(QMainWindow* mainWindow, CD3DWidget* renderWidget)

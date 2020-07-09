@@ -12,6 +12,9 @@
 #include "SkinAuto.h"
 #include <ModelMng.h>
 #include <Motion.h>
+#include <QtCore/QFileInfo>
+#include <QtWidgets/QFileDialog>
+#include <QtWidgets/QMessageBox>
 
 void CMainFrame::SkinAuto()
 {

@@ -7,6 +7,9 @@
 #ifndef SOUNDMNG_H
 #define SOUNDMNG_H
 
+#include <QtCore/QMap>
+#include <QtCore/QTimer>
+
 class CSoundMng : public QObject
 {
 	Q_OBJECT

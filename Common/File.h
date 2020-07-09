@@ -6,6 +6,8 @@
 
 #ifndef FILE_H
 #define FILE_H
+#include <QtCore/QIODevice>
+#include <QtCore/QFile>
 
 class CFile
 {

@@ -7,6 +7,8 @@
 #ifndef TEXTUREMNG_H
 #define TEXTUREMNG_H
 
+#include <QtCore/QMap>
+
 class CTexture
 {
 public:

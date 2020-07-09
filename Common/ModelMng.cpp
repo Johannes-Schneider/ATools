@@ -6,6 +6,9 @@
 
 #include <stdafx.h>
 #include "ModelMng.h"
+
+#include <QtCore/QFileInfo>
+
 #include "Object3D.h"
 #include "Motion.h"
 #include "AnimatedMesh.h"

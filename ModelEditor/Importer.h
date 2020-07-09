@@ -7,6 +7,9 @@
 #ifndef IMPORTER_H
 #define IMPORTER_H
 
+#include <QtCore/QMap>
+#include <QtCore/QVector>
+
 class CAnimatedMesh;
 class CObject3D;
 struct GMObject;

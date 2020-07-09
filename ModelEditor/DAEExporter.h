@@ -7,6 +7,8 @@
 #ifndef DAEEXPORTER_H
 #define DAEEXPORTER_H
 
+#include <QFileDialog>
+
 #include "Exporter.h"
 
 class CDAEExporter : public CExporter
@@ -34,7 +36,11 @@ private:
 	void _writeEffects();
 	void _writeMaterials();
 	void _writeGeometries();
+	void _calculateNormals(GMObject* object);
+	void _calculateNormalsForSkinVertices(GMObject* object);
+	void _calculateNormalsForNormalVertices(GMObject* object);
 	void _writeAnimations();
+	void _writeMotion(QDomElement& animations, const string& animationName, QDomElement& animationClip, CMotion* motion);
 	void _writeControllers();
 	void _writeVisualScenes();
 	void _writeScene();

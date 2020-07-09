@@ -7,6 +7,8 @@
 #ifndef MODELMNG_H
 #define MODELMNG_H
 
+#include <QtCore/QMap>
+
 struct CGlobal3D
 {
 	bool light = false;

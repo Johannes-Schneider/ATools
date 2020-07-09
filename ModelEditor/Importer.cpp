@@ -10,6 +10,7 @@
 #include <AnimatedMesh.h>
 #include <Object3D.h>
 #include <Motion.h>
+#include <QtCore/QFileInfo>
 
 using namespace Assimp;
 

@@ -8,6 +8,7 @@
 #include "Importer.h"
 #include "ImportUtils.h"
 #include <Object3D.h>
+#include <QtCore/QFileInfo>
 
 void CImporter::_setMaterials(GMObject* obj, aiNode* node)
 {

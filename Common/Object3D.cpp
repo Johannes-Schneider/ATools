@@ -6,6 +6,9 @@
 
 #include <stdafx.h>
 #include "Object3D.h"
+
+#include <QtCore/QFileInfo>
+
 #include "ModelMng.h"
 #include "Motion.h"
 #include "TextureMng.h"
@@ -195,6 +198,7 @@ void CObject3D::Render(const D3DXMATRIX* world, int lod, float currentFrame, int
 			mat = m_group->updates[i] * *world;
 			_renderNormal(obj, &mat, alpha);
 		}
+
 	}
 }
 
@@ -751,7 +755,7 @@ bool CObject3D::Load(const string& filename)
 	}
 
 	file.Read(temp);
-	m_LOD = temp != 0;
+	m_LOD = temp != 0 && ENABLE_LOD;
 
 	file.Read(m_boneCount);
 	if (m_boneCount > 0)

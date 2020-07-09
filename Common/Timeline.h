@@ -7,6 +7,9 @@
 #ifndef TIMELINE_H
 #define TIMELINE_H
 
+#include <QtGui/QPainter>
+#include <QtGui/QMouseEvent>
+
 class CTimeline : public QWidget
 {
 	Q_OBJECT

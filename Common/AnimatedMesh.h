@@ -31,7 +31,10 @@ public:
 
 	bool Load(const string& filename, int part);
 	void SetMotion(const string& filename);
+	void AddMotionFile(const string& filename);
 	MotionAttribute* GetAttributes() const;
+
+	const QVector<string>& GetMotionFiles() const;
 
 	virtual void RenderCollision(const D3DXMATRIX* world);
 
@@ -46,6 +49,7 @@ private:
 	D3DXMATRIX* m_bones;
 	D3DXMATRIX* m_invBones;
 	CMotion* m_motion;
+	QVector<string> m_motionFiles;
 
 #ifdef MODEL_EDITOR
 	MODEL_EDITOR_FRIENDS

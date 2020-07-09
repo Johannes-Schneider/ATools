@@ -7,6 +7,8 @@
 #ifndef TEXTFILE_H
 #define TEXTFILE_H
 
+#include <QtWidgets/QComboBox>
+
 enum class ETokenType
 {
 	End,

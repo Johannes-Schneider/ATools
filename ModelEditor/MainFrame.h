@@ -7,7 +7,10 @@
 #ifndef MAINFRAME_H
 #define MAINFRAME_H
 
+#include <QtCore/QStringListModel>
+#include <QtWidgets/QLabel>
 #include <QtWidgets/QMainWindow>
+#include <QtCore/QTranslator>
 #include "ui_MainFrame.h"
 
 class CModelViewer;

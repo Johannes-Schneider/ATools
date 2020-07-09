@@ -6,6 +6,9 @@
 
 #include <stdafx.h>
 #include "SoundMng.h"
+
+#include <QtCore/QDir>
+
 #include "TextFile.h"
 
 CSoundMng* SoundMng = null;

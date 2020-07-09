@@ -8,6 +8,7 @@
 #define OBJEXPORTER_H
 
 #include "Exporter.h"
+#include <QtCore/QTextStream>
 
 class COBJExporter : public CExporter
 {

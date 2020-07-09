@@ -20,6 +20,16 @@
 #include <SoundMng.h>
 #include <TextFile.h>
 #include <AboutDialog.h>
+#include <QtCore/QDir>
+#include <QtCore/QFileInfo>
+#include <QtCore/QStringListModel>
+#include <QtCore/QSettings>
+#include <QtWidgets/QLabel>
+#include <QtWidgets/QColorDialog>
+#include <QtWidgets/QInputDialog>
+#include <QtWidgets/QFileDialog>
+#include <QtWidgets/QMessageBox>
+#include <QtCore/QMimeData>
 #include <ShortcutsMng.h>
 
 CMainFrame::CMainFrame(QWidget *parent)
@@ -446,6 +456,7 @@ void CMainFrame::OpenFile(const string& filename)
 
 				if (name.startsWith(req) && name.endsWith("ani"))
 				{
+					m_mesh->AddMotionFile(name);
 					const QString temp = files[i].right(name.size() - req.size());
 					list.push_back(temp.left(temp.size() - 4));
 				}
@@ -597,10 +608,10 @@ void CMainFrame::SaveFile()
 
 	if (!filename.isEmpty())
 	{
-		QFileInfo fileInfo(filename);
-		ModelMng->SetModelPath(fileInfo.path() % '/');
-		TextureMng->SetModelTexturePath(fileInfo.path() % '/');
-		m_filename = fileInfo.fileName();
+		//QFileInfo fileInfo(filename);
+		//ModelMng->SetModelPath(fileInfo.path() % '/');
+		//TextureMng->SetModelTexturePath(fileInfo.path() % '/');
+		//m_filename = fileInfo.fileName();
 		_saveFile(filename);
 	}
 }

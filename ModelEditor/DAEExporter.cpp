@@ -7,7 +7,12 @@
 #include "stdafx.h"
 #include "DAEExporter.h"
 #include <Object3D.h>
+#include <AnimatedMesh.h>
 #include <Motion.h>
+#include <QtCore/QTextStream>
+#include <QtCore/QString>
+
+#include "ModelMng.h"
 
 CDAEExporter::CDAEExporter(CAnimatedMesh* mesh)
 	: CExporter(mesh)
@@ -274,7 +279,7 @@ void CDAEExporter::_writeGeometries()
 				content.append(' ');
 				content.append(QString::number(v.y, 'g', 7));
 				content.append(' ');
-				content.append(QString::number(-v.z, 'g', 7));
+				content.append(QString::number(v.z, 'g', 7));
 				content.append(' ');
 			}
 			float_array.appendChild(m_doc.createTextNode(content));
@@ -299,6 +304,8 @@ void CDAEExporter::_writeGeometries()
 		}
 
 		{
+			//_calculateNormals(obj);
+			
 			const QString srcID = meshID % "-normals";
 			QDomElement source = m_doc.createElement("source");
 			source.setAttribute("id", srcID);
@@ -315,11 +322,12 @@ void CDAEExporter::_writeGeometries()
 					v = ((SkinVertex*)obj->vertices)[i].n;
 				else
 					v = ((NormalVertex*)obj->vertices)[i].n;
+
 				content.append(QString::number(v.x, 'g', 7));
 				content.append(' ');
 				content.append(QString::number(v.y, 'g', 7));
 				content.append(' ');
-				content.append(QString::number(-v.z, 'g', 7));
+				content.append(QString::number(v.z, 'g', 7));
 				content.append(' ');
 			}
 			float_array.appendChild(m_doc.createTextNode(content));
@@ -458,20 +466,135 @@ void CDAEExporter::_writeGeometries()
 	m_colladaNode.appendChild(geomerties);
 }
 
+void CDAEExporter::_calculateNormals(GMObject* object)
+{
+	if (object->type == GMT_SKIN)
+	{
+		_calculateNormalsForSkinVertices(object);
+	}
+	else
+	{
+		_calculateNormalsForNormalVertices(object);
+	}
+}
+
+void CDAEExporter::_calculateNormalsForSkinVertices(GMObject* object)
+{
+	SkinVertex* a;
+	SkinVertex* b;
+	SkinVertex* c;
+	
+	D3DXVECTOR3 ab;
+	D3DXVECTOR3 ac;
+	D3DXVECTOR3 cross;
+	D3DXVECTOR3 normalized;
+
+	for (int i = 0; i < object->vertexCount; i += 3)
+	{
+		a = &((SkinVertex*)object->vertices)[i];
+		b = &((SkinVertex*)object->vertices)[i+1];
+		c = &((SkinVertex*)object->vertices)[i+2];
+
+		ab = b->p - a->p;
+		ac = c->p - a->p;
+		D3DXVec3Cross(&cross, &ab, &ac);
+		D3DXVec3Normalize(&normalized, &cross);
+
+		a->n = normalized;
+		b->n = normalized;
+		c->n = normalized;
+	}
+}
+
+void CDAEExporter::_calculateNormalsForNormalVertices(GMObject* object)
+{
+	NormalVertex* a;
+	NormalVertex* b;
+	NormalVertex* c;
+	
+	D3DXVECTOR3 ab;
+	D3DXVECTOR3 ac;
+	D3DXVECTOR3 cross;
+	D3DXVECTOR3 normalized;
+
+	for (int i = 0; i < object->vertexCount; i += 3)
+	{
+		a = &((NormalVertex*)object->vertices)[i];
+		b = &((NormalVertex*)object->vertices)[i+1];
+		c = &((NormalVertex*)object->vertices)[i+2];
+
+		ab = b->p - a->p;
+		ac = c->p - a->p;
+		D3DXVec3Cross(&cross, &ab, &ac);
+		D3DXVec3Normalize(&normalized, &cross);
+
+		a->n = normalized;
+		b->n = normalized;
+		c->n = normalized;
+	}
+}
+
+
 void CDAEExporter::_writeAnimations()
 {
 	QDomElement animations = m_doc.createElement("library_animations");
 	m_colladaNode.appendChild(animations);
 
-	TMAnimation* frames = null;
-	for (auto it = m_animations.begin(); it != m_animations.end(); it++)
+	QDomElement animationClips = m_doc.createElement("library_animation_clips");
+	m_colladaNode.appendChild(animationClips);
+
+	if (!m_mesh || m_mesh->GetMotionFiles().empty())
 	{
-		const string aniID = it.key();
+		return;
+	}
+
+	for (auto motionFile = m_mesh->GetMotionFiles().begin(); motionFile != m_mesh->GetMotionFiles().end(); ++motionFile)
+	{
+		CMotion* motion = ModelMng->GetMotion(*motionFile);
+		if (!motion)
+		{
+			continue;
+		}
+
+		string animationName = motionFile->toLower();
+		animationName.chop(4); // .ani
+		animationName = animationName.split("_").back();
+
+		QDomElement animationClip = m_doc.createElement("animation_clip");
+		animationClip.setAttribute("id", animationName);
+		animationClips.appendChild(animationClip);
+		
+		_writeMotion(animations, animationName, animationClip, motion);
+	}
+}
+
+void CDAEExporter::_writeMotion(QDomElement& animations, const string& animationName, QDomElement& animationClip, CMotion* motion)
+{
+	QMap<string, TMAnimation*> animationMap;
+	int boneCount = motion->GetBoneCount();
+	int frameCount = motion->GetFrameCount();
+	for (int i = 0; i < boneCount; ++i)
+	{
+		const string boneID = string(motion->GetBones()[i].name).toLower().replace('.', '_').replace('-', '_').replace(' ', '_');
+		if (motion->GetFrames()[i].frames)
+		{
+			animationMap[boneID % "-transform"] = motion->GetFrames()[i].frames;
+		}
+	}
+
+	TMAnimation* frames = null;
+	for (auto it = animationMap.begin(); it != animationMap.end(); ++it)
+	{
+		const string aniID = animationName % "-" % it.key();
 		frames = it.value();
 
 		QDomElement animation = m_doc.createElement("animation");
 		animation.setAttribute("id", aniID);
 		animations.appendChild(animation);
+
+		QDomElement instanceAnimation = m_doc.createElement("instance_animation");
+		instanceAnimation.setAttribute("url", "#" % aniID);
+		animationClip.appendChild(instanceAnimation);
 
 		{
 			const QString srcID = aniID % "-input";
@@ -481,9 +604,9 @@ void CDAEExporter::_writeAnimations()
 
 			QDomElement float_array = m_doc.createElement("float_array");
 			float_array.setAttribute("id", srcID % "-array");
-			float_array.setAttribute("count", QString::number(m_frameCount));
+			float_array.setAttribute("count", QString::number(frameCount));
 			QString fList;
-			for (int i = 0; i < m_frameCount; i++)
+			for (int i = 0; i < frameCount; i++)
 			{
 				fList.append(QString::number((1.0f / 30.0f) * (float)i));
 				fList.append(' ');
@@ -496,7 +619,7 @@ void CDAEExporter::_writeAnimations()
 
 			QDomElement accessor = m_doc.createElement("accessor");
 			accessor.setAttribute("source", '#' % srcID % "-array");
-			accessor.setAttribute("count", QString::number(m_frameCount));
+			accessor.setAttribute("count", QString::number(frameCount));
 			accessor.setAttribute("stride", "1");
 			technique_common.appendChild(accessor);
 
@@ -513,13 +636,13 @@ void CDAEExporter::_writeAnimations()
 
 			QDomElement float_array = m_doc.createElement("float_array");
 			float_array.setAttribute("id", srcID % "-array");
-			float_array.setAttribute("count", QString::number(m_frameCount * 16));
+			float_array.setAttribute("count", QString::number(frameCount * 16));
 			QString fList;
 			D3DXMATRIX m1, m2;
 			D3DXVECTOR3 trans;
 			D3DXQUATERNION quat;
 
-			for (int i = 0; i < m_frameCount; i++)
+			for (int i = 0; i < frameCount; i++)
 			{
 				trans = frames[i].pos;
 				quat = frames[i].rot;
@@ -539,7 +662,7 @@ void CDAEExporter::_writeAnimations()
 
 			QDomElement accessor = m_doc.createElement("accessor");
 			accessor.setAttribute("source", '#' % srcID % "-array");
-			accessor.setAttribute("count", QString::number(m_frameCount));
+			accessor.setAttribute("count", QString::number(frameCount));
 			accessor.setAttribute("stride", "16");
 			technique_common.appendChild(accessor);
 
@@ -556,9 +679,9 @@ void CDAEExporter::_writeAnimations()
 
 			QDomElement Name_array = m_doc.createElement("Name_array");
 			Name_array.setAttribute("id", srcID % "-array");
-			Name_array.setAttribute("count", QString::number(m_frameCount));
+			Name_array.setAttribute("count", QString::number(frameCount));
 			QString nameList;
-			for (int i = 0; i < m_frameCount; i++)
+			for (int i = 0; i < frameCount; i++)
 				nameList.append("LINEAR ");
 			Name_array.appendChild(m_doc.createTextNode(nameList));
 			source.appendChild(Name_array);
@@ -568,7 +691,7 @@ void CDAEExporter::_writeAnimations()
 
 			QDomElement accessor = m_doc.createElement("accessor");
 			accessor.setAttribute("source", '#' % srcID % "-array");
-			accessor.setAttribute("count", QString::number(m_frameCount));
+			accessor.setAttribute("count", QString::number(frameCount));
 			accessor.setAttribute("stride", "1");
 			technique_common.appendChild(accessor);
 
@@ -604,8 +727,8 @@ void CDAEExporter::_writeAnimations()
 		QDomElement channel = m_doc.createElement("channel");
 		channel.setAttribute("source", '#' % aniID % "-sampler");
 
-		string objID = aniID;
-		objID.remove(aniID.size() - 10, 10);
+		string objID = it.key();
+		objID.chop(10);
 		channel.setAttribute("target", objID % "/transform");
 		animation.appendChild(channel);
 	}
@@ -1015,10 +1138,10 @@ void CDAEExporter::_writeScene()
 string CDAEExporter::_matToString(const D3DXMATRIX& mat)
 {
 	const D3DXMATRIX tempMat(
-		mat._11, mat._12, -mat._13, mat._14,
-		mat._21, mat._22, -mat._23, mat._24,
-		-mat._31, -mat._32, mat._33, -mat._34,
-		mat._41, mat._42, -mat._43, mat._44
+		mat._11, mat._12, mat._13, mat._14,
+		mat._21, mat._22, mat._23, mat._24,
+		mat._31, mat._32, mat._33, mat._34,
+		mat._41, mat._42, mat._43, mat._44
 		);
 
 	string s;

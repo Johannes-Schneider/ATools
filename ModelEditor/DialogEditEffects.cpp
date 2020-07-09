@@ -7,6 +7,10 @@
 #include "stdafx.h"
 #include "DialogEditEffects.h"
 #include <Object3D.h>
+#include <QtCore/QFileInfo>
+#include <QtWidgets/QFileDialog>
+
+
 #include "ModelViewer.h"
 #include <TextureMng.h>
 
